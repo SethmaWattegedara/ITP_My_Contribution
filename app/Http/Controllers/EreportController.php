@@ -13,17 +13,8 @@ class EreportController extends Controller
         $eventreport = eventReport::all();
         return view('e_report.index', compact('eventreport'));
 
-        $eventreport = $this->get_report_data();
-        return view('/ereport')->with('eventreport',$eventreport);
-    }
-
-    public function get_report_data()
-    {
-         $eventreport = DB::table('event_reports')
-                        ->limit(10)
-                        ->get();
-         return $eventreport;
-
+        /*$eventreport = $this->get_report_data();
+        return view('/ereport')->with('eventreport',$eventreport);*/
     }
 
     public function create()
@@ -109,6 +100,19 @@ class EreportController extends Controller
         return redirect('/ereport')->with('success', 'Contact deleted!');
     }
 
+    /**
+     *
+     * EXPORT FUNCTION
+     *
+     */
+
+    public function get_report_data()
+    {
+        $eventreport = DB::table('event_reports')->limit(1)->get();
+
+        return $eventreport;
+    }
+
     public function pdf()
     {
         $pdf = \App::make('dompdf.wrapper');
@@ -119,49 +123,79 @@ class EreportController extends Controller
     function convert_report_data_to_html()
     {
         $eventreport = $this->get_report_data();
-        $output = '<table class="table table-bordered">
-            <tr>
-            <th>Customer name </th>
-            <th>Event Date</th>
-            <th>Event Time</th>
-            <th>Event Manager</th>
-            <th>Estimated No. of Attendence of guest for the Event </th>
-            <th>Proposed Registration cost for a each person</th>
-            <th>Actual Expence</th>
-            <th>Budget Expence</th>
-            </tr>
-            
+        $output = '
 
+            <h2 align="center">Event Report</h2>
+        <table class="table table-bordered "  align="center">
+
+              
            ';
         foreach ($eventreport as $ereport)
         {
             $output .='        
-                <tbody>
-                <tr>           
-                    <td>'.$ereport->customer_name.'</td>                    
-                    <td>'.$ereport->event_date.' </td>                   
-                    <td>'.$ereport->event_time.'</td>                    
-                    <td>'.$ereport->event_manager.'</td>                   
-                    <td>'.$ereport->attendence.'</td>
-                    <td>'.$ereport->cost.'</td>      
-                    <td>'.$ereport->etotal.'</td>
-                     <td>'.$ereport->btotak.'</td>
+               
                  
+                <thead>
+                <tr>
+                    <th scope="col" colspan="4" style="color:blue;">Event Information</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Customer name</td>
+                    <td>'.$ereport->customer_name.'</td>
+                    <td>Event date</td>
+                    <td>'.$ereport->event_date.'</td>
+                <tr>
+                    <td>Event time</td>
+                    <td>'.$ereport->event_time.'</td>
+                    <td>Event Manager</td>
+                    <td>'.$ereport->event_manager.'</td>
+                </tr>
+                </tr>
+                <tr>
+
+                    <td>Estimated No. of Attendence of guest for the Event </td>
+                    <td>'.$ereport->attendence.'</td>
+                    <td>Proposed Registration cost for a each person</td>
+                    <td>'.$ereport->cost.'</td>
+
+                </tr>
+                <tr>
+                    <th colspan="4" style="color:blue;" >Budget Information</th>
+                </tr>
+                <tr>
+
+                    <td colspan="2">Actual  Expence</td>
+                    <td>'.$ereport->etotal.'</td>
+                    <td></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">Budget Expence</td>
+                    <td>'.$ereport->btotal.'</td>
+                    <td></td>
 
                 </tr>
 
-                </tbody>';
+                </tbody>
+
+         
+
+                ';
         }
         $output.='</table>';
         return $output;
-
     }
 
-    public function search(Request $request){
-
-        $search =$request->get('search');
-        $eventreport = DB::table('event_reports')->where('customer_name', 'like','%'.$search.'%')->paginate(5);
-        return view('e_report.index', ['eventreport' => $eventreport]);
+    public function searchereport(Request $request)
+    {
+        $searchereport = $request->get('searchereport');
+        $eventreport=DB::table('event_reports')->where('customer_name', 'like', '%'.$searchereport.'%')->paginate(5);
+        return view('e_report/index' , ['eventreport' => $eventreport ]);
     }
+
+
 
 }

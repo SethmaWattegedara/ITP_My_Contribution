@@ -35,6 +35,8 @@ Route::get('/search','EventMenuController@search');
 //add item
 
 Route::resource('eitems','EventItemController');
+Route::get('searcheitem', 'EventItemController@searcheitem');
+Route::get('/e_item/edit/pdf','EventItemController@pdf');
 
 
 
@@ -47,9 +49,9 @@ Route::resource('estaff', 'EstaffController');
 //e report
 
 Route::resource('ereport', 'EreportController');
-Route::get('/ereport/pdf','EreportController@pdf');
+Route::get('/e_report/edit/pdf','EreportController@pdf');
 
-Route::get('search', 'EreportController@search');
+Route::get('searchereport', 'EreportController@searchereport');
 
 
 
